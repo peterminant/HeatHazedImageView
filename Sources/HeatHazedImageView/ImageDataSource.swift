@@ -28,12 +28,13 @@ import UIKit
 public protocol ImageDataSource {
     var cgImage: CGImage { get }
     var needsDisplay: Bool { get }
+    func setNeedsDisplay()
 }
 
 public class SingleImageDataSource: ImageDataSource {
     
     public let cgImage: CGImage
-    public let needsDisplay = false
+    public let needsDisplay: Bool = false
     
     public init(_ cgImage: CGImage) {
         self.cgImage = cgImage
@@ -42,6 +43,10 @@ public class SingleImageDataSource: ImageDataSource {
     public init?(_ image: UIImage?) {
         guard let cgImage = image?.cgImage else { return nil }
         self.cgImage = cgImage
+    }
+    
+    public func setNeedsDisplay() {
+        // do nothing
     }
 }
 

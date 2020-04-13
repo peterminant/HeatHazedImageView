@@ -42,7 +42,11 @@ public class HeatHazedImageView: UIView, MTKViewDelegate {
     private var noiseTexture: MTLTexture!
     private var sourceTexture: MTLTexture!
     private var imageView: UIImageView?
-    private var startTime = Date.distantPast
+    private var startTime: Date = .distantPast
+    
+    public var isAvailable: Bool {
+        metalView != nil
+    }
     
     public var intensity: Double = 0.5
     public var evaporates: Bool = false
