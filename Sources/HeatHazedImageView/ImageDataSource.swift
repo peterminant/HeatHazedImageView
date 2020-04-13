@@ -51,40 +51,6 @@ public class SingleImageDataSource: ImageDataSource {
 }
 
 @available(iOS 10.0, *)
-public class UIViewImageDataSource: ImageDataSource {
-    
-    private let view: UIView
-    private var size: CGSize
-    private var _needsDisplay = false
-    
-    public init(_ view: UIView) {
-        self.view = view
-        size = view.bounds.size
-    }
-    
-    public var needsDisplay: Bool {
-        _needsDisplay && view.bounds.size != size
-    }
-    
-    public func setNeedsDisplay() {
-        DispatchQueue.main.async { [weak self] in
-            self?._needsDisplay = true
-        }
-    }
-    
-    public var cgImage: CGImage {
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = UIScreen.main.scale
-        let image = UIGraphicsImageRenderer(bounds: view.bounds, format: format).image { ctx in
-            view.drawHierarchy(in: view.bounds, afterScreenUpdates: false)
-        }.cgImage!
-        _needsDisplay = false
-        size = view.bounds.size
-        return image
-    }
-}
-
-@available(iOS 10.0, *)
 public class CALayerImageDataSource: ImageDataSource {
     
     private let layer: CALayer
@@ -97,7 +63,7 @@ public class CALayerImageDataSource: ImageDataSource {
     }
     
     public var needsDisplay: Bool {
-        _needsDisplay && layer.bounds.size != size
+        _needsDisplay || layer.bounds.size != size
     }
     
     public func setNeedsDisplay() {
@@ -115,5 +81,16 @@ public class CALayerImageDataSource: ImageDataSource {
         _needsDisplay = false
         size = layer.bounds.size
         return image
+    }
+}
+
+@available(iOS 10.0, *)
+public class UIViewImageDataSource: CALayerImageDataSource {
+    
+    private let view: UIView
+    
+    public init(_ view: UIView) {
+        self.view = view
+        super.init(view.layer)
     }
 }
