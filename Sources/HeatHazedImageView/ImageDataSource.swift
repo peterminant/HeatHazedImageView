@@ -25,29 +25,43 @@
 
 import UIKit
 
+/// Provides images to be used as textures for `HeatHazedImageView`.
 public struct ImageDataSource {
     
-    private let _cgImage: () -> CGImage
+    private let _render: () -> CGImage
     private let _needsDisplay: () -> Bool
     private let _setNeedsDisplay: () -> ()
     
-    public init(_ _cgImage: @escaping () -> CGImage, _ _needsDisplay: @escaping () -> Bool, _ _setNeedsDisplay: @escaping () -> ()) {
-        self._cgImage = _cgImage
+    public init(_ _render: @escaping () -> CGImage, _ _needsDisplay: @escaping () -> Bool, _ _setNeedsDisplay: @escaping () -> ()) {
+        self._render = _render
         self._needsDisplay = _needsDisplay
         self._setNeedsDisplay = _setNeedsDisplay
     }
     
-    public var cgImage: CGImage { _cgImage() }
+    /// Renders current image and clears `needsDisplay` flag.
+    public func render() -> CGImage { _render() }
+    
+    /// Determines whether `HeatHazedImageView` should use new image returned by `render()` method.
     public var needsDisplay: Bool { _needsDisplay() }
+    
+    /// Sets `needsDisplay` flag to `true`.
+    /// `HeatHazedImageView` will automatically update displayed image in its next draw cycle by calling `render()`.
     public func setNeedsDisplay() { _setNeedsDisplay() }
 }
 
 public extension ImageDataSource {
     
+    /// Creates `ImageDataSource` holding specified fixed image.
+    /// - Parameters:
+    ///   - cgImage: Source image.
     static func image(_ cgImage: CGImage) -> Self {
         ImageDataSource({ cgImage }, { false }, {})
     }
     
+    /// Creates `ImageDataSource` holding specified fixed image.
+    /// If given `UIImage` does not wrap a `CGImage`, it is rendered immediately.
+    /// - Parameters:
+    ///   - uiImage: Source image.
     static func image(_ uiImage: UIImage) -> Self {
         if let cgImage = uiImage.cgImage {
             return image(cgImage)
@@ -65,6 +79,10 @@ public extension ImageDataSource {
 
 public extension ImageDataSource {
     
+    /// Creates `ImageDataSource` rendering specified `CALayer`.
+    /// Owner should refresh the image by calling `setNeedsDisplay()` when contents of the layer have changed.
+    /// - Parameters:
+    ///   - layer: Source layer.
     static func layer(_ layer: CALayer) -> Self {
         var size = layer.bounds.size
         var needsDisplay = false
@@ -81,6 +99,10 @@ public extension ImageDataSource {
         }, { needsDisplay || layer.bounds.size != size }, { needsDisplay = true })
     }
     
+    /// Creates `ImageDataSource` rendering main `layer` of specified `UIView`.
+    /// Owner should refresh the image by calling `setNeedsDisplay()` when contents of the view have changed.
+    /// - Parameters:
+    ///   - view: Source view.
     static func view(_ view: UIView) -> Self {
         layer(view.layer)
     }

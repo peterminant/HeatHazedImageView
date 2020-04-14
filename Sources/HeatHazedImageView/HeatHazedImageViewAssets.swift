@@ -25,6 +25,11 @@
 
 import UIKit
 
+/// Generates image in RGB colorspace with three distinct Perlin noise maps stored in separate color components.
+/// - Parameters:
+///   - gridSize: Size of the gradient grid for Perlin noise generator.
+///   - samplesPerNode: Number of samples / pixels for each gradient node.
+/// - returns: Generated image with size equal to `gridSize * samplesPerNode`.
 func GeneratePerlinNoiseImage(gridSize: CGSize, samplesPerNode: Int) -> UIImage {
     let gridWidth = Int(ceil(gridSize.width))
     let gridHeight = Int(ceil(gridSize.height))

@@ -25,10 +25,11 @@
 
 import MetalKit
 
+/// Image view simulating refraction of light passing through heated air, i.e. burning effect.
+/// Images provided by `dataSource` are scaled to fit the size of this view.
+/// If Metal is not supported on current device, this view displays the image without animation as a fallback behavior.
 @IBDesignable
 public class HeatHazedImageView: UIView {
-    
-    // MARK: Fields
     
     private static let library = HeatHazeShaders
     private static let noiseImage = GeneratePerlinNoiseImage(gridSize: CGSize(width: 12, height: 12), samplesPerNode: 8)
@@ -45,36 +46,16 @@ public class HeatHazedImageView: UIView {
     private var imageView: UIImageView?
     private var startTime: Date = .distantFuture
     
+    /// `true` if Metal is supported on current device, otherwise `false`.
     public var isSupported: Bool {
         metalView != nil
     }
     
-    @IBInspectable
-    public var isPaused: Bool = false {
-        didSet {
-            metalView?.isPaused = isPaused
-            metalView?.enableSetNeedsDisplay = isPaused
-        }
-    }
-    
-    @IBInspectable
-    public var speed: CGFloat = 200 {
-        didSet { setNeedsDisplay() }
-    }
-    
-    @IBInspectable
-    public var distortion: CGFloat = 500 {
-        didSet { setNeedsDisplay() }
-    }
-    
-    @IBInspectable
-    public var isEvaporating: Bool = false {
-        didSet { setNeedsDisplay() }
-    }
-    
+    /// Provides an image to be used as a texture for heat haze effect.
+    /// The image is scaled to fit this view.
     public var dataSource: ImageDataSource? {
         didSet {
-            if let cgImage = dataSource?.cgImage {
+            if let cgImage = dataSource?.render() {
                 if metalView != nil {
                     sourceTexture = loadTexture(image: cgImage, mipmap: true)
                 } else {
@@ -88,7 +69,32 @@ public class HeatHazedImageView: UIView {
         }
     }
     
-    // MARK: Initializers
+    /// Determines whether animation is paused.
+    @IBInspectable
+    public var isPaused: Bool = false {
+        didSet {
+            metalView?.isPaused = isPaused
+            metalView?.enableSetNeedsDisplay = isPaused
+        }
+    }
+    
+    /// Controls the speed of rising air: minimum = 0, maximum = 1000, default = 200.
+    @IBInspectable
+    public var speed: CGFloat = 200 {
+        didSet { setNeedsDisplay() }
+    }
+    
+    /// Controls the intensity of distortion effect: minimum = 0, maximum = 1000, default = 500.
+    @IBInspectable
+    public var distortion: CGFloat = 500 {
+        didSet { setNeedsDisplay() }
+    }
+    
+    /// Determines whether distortion effect diminishes as the air rises to the top of the view.
+    @IBInspectable
+    public var isEvaporating: Bool = false {
+        didSet { setNeedsDisplay() }
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -269,7 +275,7 @@ extension HeatHazedImageView: MTKViewDelegate {
             let uniforms = [time, speed, distortion, evaporate]
             
             if dataSource.needsDisplay {
-                sourceTexture = loadTexture(image: dataSource.cgImage, mipmap: true)
+                sourceTexture = loadTexture(image: dataSource.render(), mipmap: true)
             }
             
             renderEncoder.setRenderPipelineState(pipelineState)

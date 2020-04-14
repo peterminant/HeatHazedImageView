@@ -25,13 +25,23 @@
 
 import Foundation
 
+/// Cyclical two-dimensional Perlin noise generator.
+/// Values can be accessed by subscripting the generator with x and y coordinates.
+/// Noise structure is repeating itself around the edges of the gradient grid.
 public struct PerlinNoise2D {
     
+    /// Width of the gradient table.
     public let width: Int
+    
+    /// Height of the gradient table.
     public let height: Int
     
     private var gradient: [[[Double]]]
     
+    /// Creates cyclical two-dimensional Perlin noise generator with specified dimensions.
+    /// - Parameters:
+    ///   - width: Width of the gradient table.
+    ///   - height: Height of the gradient table.
     public init(width: Int, height: Int) {
         self.width = max(width, 1)
         self.height = max(height, 1)
