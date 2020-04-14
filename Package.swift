@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "HeatHazedImageView",
+    platforms: [
+        .iOS(.v10), .tvOS(.v10)
+    ],
     products: [
         .library(
             name: "HeatHazedImageView",
