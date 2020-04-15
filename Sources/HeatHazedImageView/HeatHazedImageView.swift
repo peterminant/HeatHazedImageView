@@ -69,7 +69,7 @@ public class HeatHazedImageView: UIView {
         }
     }
     
-    /// Determines whether animation is paused.
+    /// Determines whether animation is paused, `false` by default.
     @IBInspectable
     public var isPaused: Bool = false {
         didSet {
