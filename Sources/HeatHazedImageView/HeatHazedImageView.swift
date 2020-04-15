@@ -44,6 +44,7 @@ public class HeatHazedImageView: UIView {
     private var noiseTexture: MTLTexture!
     private var sourceTexture: MTLTexture!
     private var imageView: UIImageView?
+    private var fallbackTimer: Timer?
     private var startTime: Date = .distantFuture
     
     /// `true` if Metal is supported on current device, otherwise `false`.
@@ -73,8 +74,15 @@ public class HeatHazedImageView: UIView {
     @IBInspectable
     public var isPaused: Bool = false {
         didSet {
-            metalView?.isPaused = isPaused
-            metalView?.enableSetNeedsDisplay = isPaused
+            if let metalView = self.metalView {
+                metalView.isPaused = isPaused
+                metalView.enableSetNeedsDisplay = isPaused
+            } else {
+                fallbackTimer?.invalidate()
+                if !isPaused {
+                    createFallbackTimer()
+                }
+            }
         }
     }
     
@@ -104,6 +112,10 @@ public class HeatHazedImageView: UIView {
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
+    }
+    
+    deinit {
+        isPaused = true
     }
     
     private func setup() {
@@ -243,6 +255,20 @@ public class HeatHazedImageView: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
         self.imageView = imageView
+        if !isPaused {
+            createFallbackTimer()
+        }
+    }
+    
+    private func createFallbackTimer() {
+        guard imageView != nil else { return }
+        fallbackTimer?.invalidate()
+        fallbackTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 25, repeats: true) { [weak self] _ in
+            guard let self = self, let dataSource = self.dataSource else { return }
+            if dataSource.needsDisplay {
+                self.imageView?.image = UIImage(cgImage: dataSource.render())
+            }
+        }
     }
     
     public override func setNeedsDisplay() {
