@@ -20,10 +20,10 @@ imageView.isEvaporating = false // determines whether effect diminishes as the a
 
 3. Set source image
 ```swift
-imageView.dataSource = .image(cgImage) // fixed image
-imageView.dataSource = .image(uiImage) // fixed image and scale
-imageView.dataSource = .layer(caLayer) // render layer (e.g. CAGradientLayer) using screen scale
-imageView.dataSource = .view(uiView) // render view (e.g. UILabel) using screen scale
+imageView.dataSource = .image(cgImage) // use CGImage
+imageView.dataSource = .image(uiImage) // use UIImage
+imageView.dataSource = .layer(caLayer) // render CALayer (e.g. CAGradientLayer) using screen scale
+imageView.dataSource = .view(uiView) // render UIView (e.g. UILabel) using screen scale
 ```
 
 4. Start / stop the animation
@@ -39,3 +39,8 @@ imageView.dataSource = .view(label)
 label.text = "2"
 imageView.dataSource?.setNeedsDisplay()
 ```
+
+### Requirements
+
+Supported platforms are iOS 10.0 or later and tvOS 10.0 or later.
+If Metal is not available on target device, HeatHazedImageView will fallback to using plain UIImageView without any additional effects.

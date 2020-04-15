@@ -57,8 +57,8 @@ public struct PerlinNoise2D {
     }
     
     public subscript(x: Double, y: Double) -> Double {
-        let x0 = intIndex(x, width), x1 = x0 + 1
-        let y0 = intIndex(y, height), y1 = y0 + 1
+        let x0 = Int(floor(x)), x1 = x0 + 1
+        let y0 = Int(floor(y)), y1 = y0 + 1
         let dot00 = dotProduct(x0, y0, x, y)
         let dot01 = dotProduct(x0, y1, x, y)
         let dot10 = dotProduct(x1, y0, x, y)
@@ -70,20 +70,20 @@ public struct PerlinNoise2D {
         )
     }
     
-    private func intIndex(_ dblIndex: Double, _ length: Int) -> Int {
-        var i = Int(floor(dblIndex))
-        if i < 0 {
-            i += (-i / length + 1) * length
-        }
-        return i
-    }
-    
     private func dotProduct(_ ix: Int, _ iy: Int, _ x: Double, _ y: Double) -> Double {
         let dx = x - Double(ix)
         let dy = y - Double(iy)
-        let gx = ix % width
-        let gy = iy % height
+        let gx = wrap(ix, width)
+        let gy = wrap(iy, height)
         return dx * gradient[gy][gx][0] + dy * gradient[gy][gx][1]
+    }
+    
+    private func wrap(_ index: Int, _ length: Int) -> Int {
+        var i = index
+        if i < 0 {
+            i += (-i / length + 1) * length
+        }
+        return i % length
     }
     
     private func interpolate(_ a: Double, _ b: Double, _ w: Double) -> Double {
