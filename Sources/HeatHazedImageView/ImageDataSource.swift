@@ -83,12 +83,13 @@ public extension ImageDataSource {
     /// Owner should refresh the image by calling `setNeedsDisplay()` when contents of the layer have changed.
     /// - Parameters:
     ///   - layer: Source layer.
-    static func layer(_ layer: CALayer) -> Self {
+    ///   - scale: Image scale factor, defaults to screen scale.
+    static func layer(_ layer: CALayer, scale: CGFloat = UIScreen.main.scale) -> Self {
         var size = layer.bounds.size
         var needsDisplay = false
         return ImageDataSource({
             let format = UIGraphicsImageRendererFormat()
-            format.scale = UIScreen.main.scale
+            format.scale = scale
             let bounds = layer.bounds
             let image = UIGraphicsImageRenderer(bounds: bounds, format: format).image { ctx in
                 layer.render(in: ctx.cgContext)
@@ -103,7 +104,8 @@ public extension ImageDataSource {
     /// Owner should refresh the image by calling `setNeedsDisplay()` when contents of the view have changed.
     /// - Parameters:
     ///   - view: Source view.
-    static func view(_ view: UIView) -> Self {
-        layer(view.layer)
+    ///   - scale: Image scale factor, defaults to screen scale.
+    static func view(_ view: UIView, scale: CGFloat = UIScreen.main.scale) -> Self {
+        layer(view.layer, scale: scale)
     }
 }

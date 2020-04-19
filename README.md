@@ -9,7 +9,7 @@ Image view simulating refraction of light passing through heated air, i.e. heat 
 1. Link HeatHazedImageView library to your project as Swift Package Manager dependency in Package.swift or using Xcode
 ```swift
 dependencies: [
-    .package(url: "https://github.com/peterminant/HeatHazedImageView.git", from: "1.0.1")
+    .package(url: "https://github.com/peterminant/HeatHazedImageView.git", from: "1.1.0")
 ],
 targets: [
     .target(name: "YourTarget", dependencies: ["HeatHazedImageView"])
@@ -32,10 +32,9 @@ imageView.isEvaporating = false // determines whether effect diminishes as the a
 
 4. Set source image
 ```swift
-imageView.dataSource = .image(cgImage) // use CGImage
-imageView.dataSource = .image(uiImage) // use UIImage
+imageView.dataSource = .image(image) // use CGImage or UIImage
 imageView.dataSource = .layer(caLayer) // render CALayer (e.g. CAGradientLayer) using screen scale
-imageView.dataSource = .view(uiView) // render UIView (e.g. UILabel) using screen scale
+imageView.dataSource = .view(uiView, scale: 2) // render UIView (e.g. UILabel) using given scale
 ```
 
 5. Start / stop the animation
