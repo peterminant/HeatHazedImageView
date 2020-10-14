@@ -79,7 +79,7 @@ struct Uniforms {
     float time;
     float speed;
     float distortion;
-    float evaporate;
+    float evaporation;
 };
 
 vertex VertexOut vertex_shader(const device VertexIn* vertex_array [[ buffer(0) ]],
@@ -105,8 +105,8 @@ fragment float4 fragment_shader(VertexOut in                [[ stage_in ]],
     offset -= float2(0.5, 0.5);
     offset *= 2.0;
     offset *= uniforms.distortion;
-    if (uniforms.evaporate != 0) {
-        offset *= in.texCoord.y;
+    if (uniforms.evaporation > 0) {
+        offset *= clamp(1.0 - ((1.0 - in.texCoord.y) * uniforms.evaporation), 0.0, 1.0);
     }
     return sourceTex.sample(sourceSampler, in.texCoord + offset);
 }

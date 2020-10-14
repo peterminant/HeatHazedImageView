@@ -98,9 +98,9 @@ public class HeatHazedImageView: UIView {
         didSet { setNeedsDisplay() }
     }
     
-    /// Determines whether distortion effect diminishes as the air rises to the top of the view.
+    /// Controls the intensity of evaporation as the air rises upwards: 0 = no evaporation (default), 1 = effect is nullified at view's top border, 2 = effect is nullified at view's vertical center
     @IBInspectable
-    public var isEvaporating: Bool = false {
+    public var evaporation: CGFloat = 0 {
         didSet { setNeedsDisplay() }
     }
     
@@ -297,8 +297,8 @@ extension HeatHazedImageView: MTKViewDelegate {
             let time = Float(Date().timeIntervalSince(startTime))
             let speed = Float(1.0 * min(max(self.speed, 0), 1000) / 1000)
             let distortion = Float(0.1 * min(max(self.distortion, 0), 1000) / 1000)
-            let evaporate: Float = isEvaporating ? 1 : 0
-            let uniforms = [time, speed, distortion, evaporate]
+            let evaporation = Float(self.evaporation)
+            let uniforms = [time, speed, distortion, evaporation]
             
             if dataSource.needsDisplay {
                 sourceTexture = loadTexture(image: dataSource.render(), mipmap: true)
