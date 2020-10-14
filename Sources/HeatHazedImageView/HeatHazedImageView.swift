@@ -31,8 +31,7 @@ import MetalKit
 @IBDesignable
 public class HeatHazedImageView: UIView {
     
-    private static let library = HeatHazeShaders
-    private static let noiseImage = GeneratePerlinNoiseImage(gridSize: CGSize(width: 12, height: 12), samplesPerNode: 8)
+    private static let noiseImage = UIImage(contentsOfFile: Bundle.module.path(forResource: "noise", ofType: "png")!)!
     
     private var metalView: MTKView?
     private var device: MTLDevice!
@@ -139,7 +138,7 @@ public class HeatHazedImageView: UIView {
         guard
             let device = MTLCreateSystemDefaultDevice(),
             let commandQueue = device.makeCommandQueue(),
-            let library = try? device.makeLibrary(source: Self.library, options: nil) else {
+            let library = try? device.makeDefaultLibrary(bundle: .module) else {
             return false
         }
         

@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "HeatHazedImageView",
     platforms: [
-        .iOS(.v10), .tvOS(.v10)
+        .iOS(.v11), .tvOS(.v11)
     ],
     products: [
         .library(
@@ -18,6 +18,7 @@ let package = Package(
     targets: [
         .target(
             name: "HeatHazedImageView",
-            dependencies: []),
+            resources: [.process("Resources/heathaze.metal"),
+                        .process("Resources/noise.png")]),
     ]
 )

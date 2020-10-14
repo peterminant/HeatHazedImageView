@@ -91,3 +91,45 @@ public struct PerlinNoise2D {
         return a + (b - a) * f
     }
 }
+
+#if canImport(UIKit)
+import UIKit
+
+/// Generates image in RGB colorspace with three distinct Perlin noise maps stored in separate color components.
+/// - Parameters:
+///   - gridSize: Size of the gradient grid for Perlin noise generator.
+///   - samplesPerNode: Number of samples / pixels for each gradient node.
+/// - returns: Generated image with size equal to `gridSize * samplesPerNode`.
+public func GeneratePerlinNoiseImage(gridSize: CGSize, samplesPerNode: Int) -> UIImage {
+    let gridWidth = Int(ceil(gridSize.width))
+    let gridHeight = Int(ceil(gridSize.height))
+    let imageWidth = gridWidth * samplesPerNode
+    let imageHeight = gridHeight * samplesPerNode
+    
+    let noise1 = PerlinNoise2D(width: gridWidth, height: gridHeight)
+    let noise2 = PerlinNoise2D(width: gridWidth, height: gridHeight)
+    let noise3 = PerlinNoise2D(width: gridWidth, height: gridHeight)
+    let noise4 = PerlinNoise2D(width: gridWidth, height: gridHeight)
+    
+    let format = UIGraphicsImageRendererFormat()
+    format.scale = 1
+    let bounds = CGRect(x: 0, y: 0, width: imageWidth, height: imageHeight)
+    
+    return UIGraphicsImageRenderer(bounds: bounds, format: format).image { ctx in
+        UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1).setFill()
+        ctx.fill(bounds)
+        for col in 0 ..< imageWidth {
+            for row in 0 ..< imageHeight {
+                let x = Double(col) / Double(samplesPerNode)
+                let y = Double(row) / Double(samplesPerNode)
+                let r = CGFloat(noise1[x, y] / 2 + 0.5)
+                let g = CGFloat(noise2[x, y] / 2 + 0.5)
+                let b = CGFloat(noise3[x, y] / 2 + 0.5)
+                let a = CGFloat(noise4[x, y] / 2 + 0.5)
+                UIColor(red: r, green: g, blue: b, alpha: a).setFill()
+                ctx.fill(CGRect(x: col, y: row, width: 1, height: 1))
+            }
+        }
+    }
+}
+#endif

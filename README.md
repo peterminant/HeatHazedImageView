@@ -9,7 +9,7 @@ Image view simulating refraction of light passing through heated air, i.e. heat 
 1. Link HeatHazedImageView library to your project as Swift Package Manager dependency in Package.swift or using Xcode
 ```swift
 dependencies: [
-    .package(url: "https://github.com/peterminant/HeatHazedImageView.git", from: "1.1.0")
+    .package(url: "https://github.com/peterminant/HeatHazedImageView.git", from: "2.0.0")
 ],
 targets: [
     .target(name: "YourTarget", dependencies: ["HeatHazedImageView"])
@@ -27,7 +27,7 @@ let imageView: HeatHazedImageView!
 ```swift
 imageView.speed = 200 // speed of rising air: min = 0, max = 1000
 imageView.distortion = 500 // intensity of distortion effect: min = 0, max = 1000
-imageView.isEvaporating = false // determines whether effect diminishes as the air rises to the top
+imageView.evaporation = 0 // controls how the effect diminishes as the air rises to the top: 0 = no evaporation, 1 = effect is nullified at view's top border
 ```
 
 4. Set source image
@@ -53,5 +53,5 @@ imageView.dataSource?.setNeedsDisplay()
 
 ### Requirements
 
-Supported platforms are iOS 10.0 or later and tvOS 10.0 or later.
+Supported platforms are iOS 11.0 or later and tvOS 11.0 or later.
 If Metal is not available on target device, HeatHazedImageView will fallback to using plain UIImageView without additional effects.
